@@ -8,7 +8,14 @@ using WhatWeGot.Model;
 
 namespace WhatWeGot.DataAccess
 {
-    public class LedgerRepository
+    public interface ILedgerRepository
+    {
+        Task<IEnumerable<FinanceItem>> GetMonthlyItems(int month);
+        Task<IEnumerable<FinanceItem>> GetLastMonth();
+        Task SaveFinanceItem(FinanceItem item);
+    }
+
+    public class LedgerRepository : ILedgerRepository
     {
         private readonly WhatWeGotContext _context;
         private readonly TimeProvider _time;
@@ -19,17 +26,23 @@ namespace WhatWeGot.DataAccess
             _time = TimeProvider.Current;
         }
 
-        public async Task<IEnumerable<FinanceItem>> getMonthlyItems(int month)
+        public async Task<IEnumerable<FinanceItem>> GetMonthlyItems(int month)
         {
-            var items = await _context.Items.Where(i => i.EventDate.Month == month).ToListAsync();
+            var items = await _context.Items.Include(x => x.Category).Where(i => i.EventDate.Month == month).ToListAsync();
             return items;
         }
 
-        public async Task<IEnumerable<FinanceItem>> getLastMonth()
+        public async Task<IEnumerable<FinanceItem>> GetLastMonth()
         {
             var lastMonth = _time.Now.AddMonths(-1);
-            var items = await _context.Items.Where(i => i.EventDate.CompareTo(lastMonth) > 0).ToListAsync();
+            var items = await _context.Items.Include(x => x.Category).Where(i => i.EventDate.CompareTo(lastMonth) > 0).ToListAsync();
             return items;
+        }
+
+        public async Task SaveFinanceItem(FinanceItem item)
+        {
+            await _context.AddAsync(item);
+            await _context.SaveChangesAsync();
         }
     }
 }

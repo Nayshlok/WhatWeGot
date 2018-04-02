@@ -8,11 +8,12 @@ using WhatWeGot.Model;
 
 namespace WhatWeGot.Controllers
 {
+    [Route("api/[controller]")]
     public class LedgerController : Controller
     {
-        private readonly LedgerRepository _repo;
+        private readonly ILedgerRepository _repo;
 
-        protected LedgerController(LedgerRepository repo)
+        public LedgerController(ILedgerRepository repo)
         {
             _repo = repo;
         }
@@ -20,20 +21,21 @@ namespace WhatWeGot.Controllers
         [HttpGet]
         public async Task<IEnumerable<FinanceItem>> GetLastMonth()
         {
-            return await _repo.getLastMonth();
+            return await _repo.GetLastMonth();
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
+        [HttpGet("{month}")]
         public async Task<IEnumerable<FinanceItem>> GetSpecificMonth(int month)
         {
-            return await _repo.getMonthlyItems(month);
+            return await _repo.GetMonthlyItems(month);
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task Post([FromBody]FinanceItem value)
         {
+            await _repo.SaveFinanceItem(value);
         }
 
         // PUT api/values/5
