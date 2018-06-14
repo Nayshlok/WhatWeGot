@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios'
 import logo from './logo.svg';
 import './App.css';
+import ToggleButton from './ToggleButton';
 
 class App extends Component {
 
@@ -29,15 +30,7 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <form action="" method="POST">
-          <label for="name">Item Name</label> 
-          <input id="name" type="text" />
-          <label for="amount">Amount</label>
-          <input id="amount" type="text" />
-          <label for="date">Date</label>
-          <input id="date" type="date" />
-          <input type="submit" />
-        </form>
+        <ToggleButton />
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
           <ul>
